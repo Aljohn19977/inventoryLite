@@ -106,12 +106,12 @@ $(document).ready(function(){
 
    $("#add_brand_modal").click(function(){
       event.preventDefault();
-      $('#FormModal').modal('show');
+      $('#brandModal').modal('show');
    });
 
    $("#add_category_modal").click(function(){
       event.preventDefault();
-      $('#FormModal').modal('show');
+      $('#categoryModal').modal('show');
    });
 
    $("#clear_field").click(function(){
