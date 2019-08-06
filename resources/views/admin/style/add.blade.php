@@ -12,6 +12,8 @@
 <script src="{{asset('admin/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
 <!-- MultiSelect -->
 <script src="{{ asset('admin/dist/js/bootstrap-multiselect.js') }}"></script>
+<!-- SweetAlert2 -->
+<script src="{{ asset('admin/dist/js/sweetalert2.min.js') }}"></script>
 
 <script>
 $(document).ready(function(){
@@ -25,12 +27,127 @@ $(document).ready(function(){
 
    multiselect();
 
+   $("#add_brand_modal").click(function(){
+      event.preventDefault();
+      $('#brandModal').modal('show');
+   });
+
+   $("#add_category_modal").click(function(){
+      event.preventDefault();
+      $('#categoryModal').modal('show');
+   });
+
+  $( "#add_brand" ).click(function() {
+
+  var name = $('#brand_name').val();
+  Pace.restart();
+  Pace.track(function () {
+    $.ajax({
+            type: 'POST',
+            url: "{{ route('brand.store') }}",
+            data: {
+              'name': name,
+
+            },
+            success: function(data) {
+
+              var message = data.success;
+              Swal.fire({
+                position: 'top-end',
+                type: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 1500
+              })
+
+              $('#brandModal').modal('hide')
+              $('#brand_name').val('');
+            
+              multiselect();
+              
+            },
+            error: function(data){
+
+              var message = data.responseJSON.errors.name.toString();
+
+              Swal.fire({
+                position: 'top-end',
+                type: 'warning',
+                title: message,
+                showConfirmButton: false,
+                timer: 1500
+              })
+      
+              $.each(data.responseJSON.errors, function(key, value){
+                $("div[name="+key+"]").addClass("has-error").append("<span class='help-block'>"+value+"</span>");
+              });
+            }
+    });
+  });
+  });
+
+$( "#add_category" ).click(function() {
+
+var name = $('#category_name').val();
+Pace.restart();
+Pace.track(function () {
+  $.ajax({
+          type: 'POST',
+          url: "{{ route('category.store') }}",
+          data: {
+            'name': name,
+
+          },
+          success: function(data) {
+
+            var message = data.success;
+            Swal.fire({
+              position: 'top-end',
+              type: 'success',
+              title: message,
+              showConfirmButton: false,
+              timer: 1500
+            })
+
+            $('#categoryModal').modal('hide')
+            $('#category_name').val('');
+          
+            multiselect();
+            
+          },
+          error: function(data){
+
+            var message = data.responseJSON.errors.name.toString();
+
+            Swal.fire({
+              position: 'top-end',
+              type: 'warning',
+              title: message,
+              showConfirmButton: false,
+              timer: 1500
+            })
+    
+            $.each(data.responseJSON.errors, function(key, value){
+              $("div[name="+key+"]").addClass("has-error").append("<span class='help-block'>"+value+"</span>");
+            });
+          }
+  });
+});
+});
+
+
+
+   $("#clear_field").click(function(){
+      clearFields();
+      event.preventDefault();
+   });
+
    $('.select-ajax').multiselect({
         maxHeight: 400,
         buttonWidth: '100%',
         includeSelectAllOption: true,
         enableFiltering: true,
-    }); 
+   }); 
 
 
 
@@ -40,13 +157,11 @@ $(document).ready(function(){
         url: '/apiGetAllBrand',
         dataType: 'json',
         success: function(data) {
-
-          console.log(data)
+          $('#select_brand').find('option').remove()
           $.each(data.items, function (i, item) {
               $('#select_brand').append('<option value="' + item.id + '">' + item.name + '</option>');
         
           });
-		  		
           $('#select_brand').multiselect('rebuild');
         },
         error: function() {
@@ -59,13 +174,11 @@ $(document).ready(function(){
         url: '/apiGetAllCategory',
         dataType: 'json',
         success: function(data) {
-
-          console.log(data)
+          $('#select_category').find('option').remove()
           $.each(data.items, function (i, item) {
               $('#select_category').append('<option value="' + item.id + '">' + item.name + '</option>');
         
           });
-		  		
           $('#select_category').multiselect('rebuild');
         },
         error: function() {
@@ -73,6 +186,7 @@ $(document).ready(function(){
         }
       });
     }   
+    
    function getId(){
      
       $.ajax({
@@ -102,77 +216,60 @@ $(document).ready(function(){
     $( ".help-block" ).remove();
   }
 
-  
-
-   $("#add_brand_modal").click(function(){
+  $('#insert_form').on('submit',function(event){
+      
       event.preventDefault();
-      $('#brandModal').modal('show');
-   });
+      Pace.restart();
+      
+      var form_data = $('#insert_form').serialize();
+      var sku_style_id = $("#sku_style_id").val();
+      var name = $("#name").val();
+      var brand_id = $("#select_brand").val();
+      var category_id = $("#select_category").val();
+      var description = $("#description").val();
+      var status = $("#status").val();
 
-   $("#add_category_modal").click(function(){
-      event.preventDefault();
-      $('#categoryModal').modal('show');
-   });
-
-   $("#clear_field").click(function(){
-      clearFields();
-      event.preventDefault();
-   });
-
-   $('#insert_form').on('submit',function(event){
     
-    event.preventDefault();
-    Pace.restart();
-    
-    var form_data = $('#insert_form').serialize();
-    var sku_style_id = $("#sku_style_id").val();
-    var name = $("#name").val();
-    var brand_id = $("#select_brand").val();
-    var category_id = $("#select_category").val();
-    var description = $("#description").val();
-    var status = $("#status").val();
+        Pace.track(function () {
+                  $.ajax({
+                        type: 'post',
+                        url: "{{ url('/style') }}",
+                        data: form_data
+                              + "&sku_style_id=" + sku_style_id
+                              + "&name=" + name
+                              + "&brand_id=" + brand_id
+                              + "&status=" + status
+                              + "&category_id=" + category_id
+                              + "&description=" + description,
+                        success: function(data) {
 
-  
-      Pace.track(function () {
-                $.ajax({
-                      type: 'post',
-                      url: "{{ url('/style') }}",
-                      data: form_data
-                             + "&sku_style_id=" + sku_style_id
-                             + "&name=" + name
-                             + "&brand_id=" + brand_id
-                             + "&status=" + status
-                             + "&category_id=" + category_id
-                             + "&description=" + description,
-                      success: function(data) {
+                              getId();
+                              clearError();
+                              clearFields();
+                              
+                              
+                              $('#error').html('<div class="alert alert-success" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> Style <strong>'+name+'</strong> succesfully added.</div>');
+                              window.setTimeout(function() {
+                                              $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                                                  $(this).remove(); 
+                                              });
+                                      }, 4000);    
 
-                            getId();
+                        },
+                        error: function(error){
+
                             clearError();
-                            clearFields();
-                            
-                            
-                             $('#error').html('<div class="alert alert-success" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> Style <strong>'+name+'</strong> succesfully added.</div>');
-                             window.setTimeout(function() {
-                                            $(".alert").fadeTo(500, 0).slideUp(500, function(){
-                                                $(this).remove(); 
-                                            });
-                                    }, 4000);    
+                            getId();
 
-                      },
-                      error: function(error){
+                            $.each(error.responseJSON.errors, function(key, value){                         
+                                  $("#"+key+"_this").addClass("has-error").append("<span class='help-block'>"+value+"</span>");
+                            });
 
-                          clearError();
-                          getId();
-
-                          $.each(error.responseJSON.errors, function(key, value){                         
-                                $("#"+key+"_this").addClass("has-error").append("<span class='help-block'>"+value+"</span>");
-                          });
-
-                      }
-                  }); 
-      });
-    });    
-});
+                        }
+                    }); 
+        });
+      });    
+  });
 
 </script>
 @endsection
@@ -268,17 +365,17 @@ $(document).ready(function(){
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Add Tag</h4>
+                    <h4 class="modal-title" id="myModalLabel">Add Brand</h4>
                   </div>
                   <div class="modal-body">
                   <div class="form-group">
                     <label for="title">Name</label>
-                    <input type="text" class="form-control" id="tag_name" name="tag" placeholder="Name">
+                    <input type="text" class="form-control" id="brand_name" name="brand" placeholder="Name">
                     </div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" id="add_tag" class="btn btn-primary">Submit</button>
+                    <button type="button" id="add_brand" class="btn btn-primary">Submit</button>
                   </div>
                 </div>
               </div>
@@ -288,17 +385,17 @@ $(document).ready(function(){
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Add Tag</h4>
+                    <h4 class="modal-title" id="myModalLabel">Add Category</h4>
                   </div>
                   <div class="modal-body">
                   <div class="form-group">
                     <label for="title">Name</label>
-                    <input type="text" class="form-control" id="tag_name" name="tag" placeholder="Name">
+                    <input type="text" class="form-control" id="category_name" name="category" placeholder="Name">
                     </div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" id="add_tag" class="btn btn-primary">Submit</button>
+                    <button type="button" id="add_category" class="btn btn-primary">Submit</button>
                   </div>
                 </div>
               </div>

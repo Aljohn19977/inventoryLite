@@ -35,18 +35,18 @@ $(document).ready(function(){
 //      });
 //   }
 
-    function clearFields(){               
-        $('#name').val('');
-        $('#description').val('');
-        $("#brand_id").val('').trigger('change');
-        $("#category_id").val('').trigger('change');
-        $("#status").val('').trigger('change');
+  function clearFields(){               
+    $('#name').val('');
+    $('#description').val('');
+    $("#brand_id").val('').trigger('change');
+    $("#category_id").val('').trigger('change');
+    $("#status").val('').trigger('change');
         
-    }
+  }
   
   function clearError(){
-    $( ".has-error" ).removeClass("has-error");
-    $( ".help-block" ).remove();
+     $( ".has-error" ).removeClass("has-error");
+     $( ".help-block" ).remove();
   }
 
   
@@ -167,7 +167,7 @@ $(document).ready(function(){
                             @if($category->id == $styles->category_id)
                             <option selected="selected" value="{{ $styles->category_id }}">{{ $styles->category->name }}</option>
                             @else
-                            <option value="{{ $category_id }}">{{ $category->name }}</option>
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endif
                         @endforeach
                       </select>

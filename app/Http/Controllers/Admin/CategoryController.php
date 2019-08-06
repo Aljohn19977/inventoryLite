@@ -52,7 +52,7 @@ class CategoryController extends Controller
         $category->name = $request->name;
         $category->save();
 
-        return response()->json(['success'=>'Success']);
+        return response()->json(['success'=>'Category '.$request->name.' is successfully added']);
     }
 
     /**

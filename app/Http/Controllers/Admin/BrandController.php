@@ -45,7 +45,15 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,[
+            'name' => 'required',
+        ]);
+     
+        $brand = new Brand;
+        $brand->name = $request->name;
+        $brand->save();
+
+        return response()->json(['success'=>'Brand '.$request->name.' is successfully added']);
     }
 
     /**
