@@ -1,15 +1,11 @@
 @extends('admin.partials.master')
 
 @section('style')
-<!-- Select2 -->
-<link rel="stylesheet" href="{{asset('admin/bower_components/select2/dist/css/select2.min.css')}}">
 <!-- MultiSelect -->
 <link rel="stylesheet" href="{{ asset('admin/dist/css/bootstrap-multiselect.css')}}">
 @endsection
 
 @section('script')
-<!-- Select2 -->
-<script src="{{asset('admin/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
 <!-- MultiSelect -->
 <script src="{{ asset('admin/dist/js/bootstrap-multiselect.js') }}"></script>
 <!-- SweetAlert2 -->
