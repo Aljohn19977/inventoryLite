@@ -28,6 +28,11 @@ Route::group(['namespace' => 'Admin'], function(){
     Route::get('/getSkuId', 'StyleController@getSkuId');
     Route::get('/getStyleInfo/{id}','StyleController@getStyleInfo');
 
+    /* Item Management*/
+    Route::resource('/item', 'ItemController');
+    Route::get('/item/add/{id}','ItemController@addItem');
+    Route::post('/item/apiGetItemActiveStyle','ItemController@apiGetItemActiveStyle')->name('api.item.getItemActiveStyle');
+
     /* Brand Management*/
     Route::resource('/brand', 'BrandController');
     Route::get('/brand/edit/{id}','BrandController@edit');

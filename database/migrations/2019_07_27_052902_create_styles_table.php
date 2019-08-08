@@ -20,6 +20,10 @@ class CreateStylesTable extends Migration
             $table->string('brand_id');
             $table->string('category_id');
             $table->string('description')->nullable();
+            $table->integer('item_qty');
+            $table->string('item_qty_status');
+            $table->integer('display_qty');
+            $table->string('display_qty_status');
             $table->string('status');
             $table->timestamps();
         });

@@ -26,6 +26,71 @@ var selected_category = {{ $styles->category_id }};
 
 multiselect();
 
+var html = '';
+          html += '<tr>';
+          html += '<td><div class="form-group"><input type="text" class="form-control" name="style_size[]" required></div></td>';
+          html += '<td><div class="form-group"><input type="text" class="form-control" name="style_color[]" required></div></td>';
+          html += '<td><div class="form-group"><input type="number" class="form-control" name="quantity[]" required></div></td>';
+          html += '<td><button class="btn btn-danger" id="remove"><i class="fa fa-fw fa-remove"></i></button></td>';
+          html += '</tr>';
+
+$(document).on('click', '#add_row', function(){
+    $('#item_table').append(html);
+});
+
+$(document).on('click', '#remove', function(){
+     var rowCount = $('#item_table tr').length;
+     if(rowCount!=2){
+        $(this).closest('tr').remove();
+     }
+});
+
+
+ $('#insert_form').on('submit',function(event){
+    
+    event.preventDefault();
+    Pace.restart();
+    
+    var form_data = $('#insert_form').serialize();
+    var style_id = $("#style_id").val();
+    var name = $("#name").val();
+  
+      Pace.track(function () {
+               $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+               });
+                $.ajax({
+                      type: 'post',
+                      url: '/item',
+                      data: form_data
+                             + "&style_id=" + style_id,
+                      success: function(data) {
+                          $('#item_table').find("tr:gt(0)").remove();
+                          $('#item_table').append(html);
+  
+                             $('#error').html('<div class="alert alert-success" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Success!</strong> Stocks for <strong>'+name+'</strong> succesfully added.</div>');
+                             window.setTimeout(function() {
+                                            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                                                $(this).remove(); 
+                                            });
+                                    }, 4000);    
+                      },
+                      error: function(error){
+                        $('#error').html('<div class="alert alert-danger" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Failed!</strong> Please input right value for each input fields.</div>');
+                                window.setTimeout(function() {
+                                            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                                                $(this).remove(); 
+                                            });
+                        }, 5000);   
+                      }
+                  });
+              
+      });
+    });       
+
+
 $('.select-ajax').multiselect({
     maxHeight: 400,
     buttonWidth: '100%',
@@ -110,6 +175,7 @@ $('.select-ajax').multiselect({
                     <div class="form-group" id="sku_style_id_this">
                       <label for="style_id">ID</label>
                       <input type="email" class="form-control" id="sku_style_id" value="{{ $styles->sku_style_id }}" disabled>
+                      <input type="name" class="form-control hide" id="style_id" value="{{ $styles->id }}">
                     </div>
                   </div>
                   <div class="col-md-4">
@@ -151,10 +217,48 @@ $('.select-ajax').multiselect({
                     </div>
                   </div>
                 </div>
+                <div class="row">
+                  <div class="col-md-12">
+                  <table class="table table-bordered table-responsive" id="item_table">
+                    <thead>
+                    <tr>
+                      <th style="width: 100px">Size</th>
+                      <th style="width: 300px">Color</th>
+                      <th style="width: 100px">Quantity</th>
+                      <th style="width: 110px"><button type="button" class="btn btn-success" id="add_row"><i class="fa fa-fw fa-plus"></i></button></th>
+                    </tr>
+                    </thead>
+                    <tbody> 
+                    <tr>
+                      <td>
+                        <div class="form-group">
+                          <input type="text" class="form-control" name="style_size[]" required>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="form-group">
+                          <input type="text" class="form-control" name="style_color[]" required>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="form-group">
+                        <input type="number" class="form-control" name="quantity[]" required>
+                        </div>
+                      </td>
+                      <td>
+                        <button class="btn btn-danger" id="remove"><i class="fa fa-fw fa-remove"></i></button>
+                      </td>
+                    </tr>
+                    <tbody> 
+                  </table>
+                  </div>
+                </div>
               </div>
               <!-- /.box-body -->
               <div class="box-footer">
                 <a href="{{ URL::previous() }}" class="btn btn-primary">Back</a>
+                <input type="submit" name="submit" class="btn btn-primary" value="Submit" />
+                <button type="submit" class="btn btn-primary">Clear</button>
               </div>
             </form>
           </div>

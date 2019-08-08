@@ -21,7 +21,7 @@ class StyleController extends Controller
      */
     public function index()
     {
-        return view('admin.style.view');
+        return view('admin.style.index');
     }
 
     /**
@@ -35,7 +35,7 @@ class StyleController extends Controller
         $categories = Category::all();
 
         $sku_id_not_clean = preg_replace("/[:-]/","", Carbon::now());
-        $sku_style_id = preg_replace('/\s+/', '', $sku_id_not_clean);
+        $sku_style_id = preg_replace('/\s+/', '', 'STY-'.$sku_id_not_clean);
 
         return view('admin.style.add',compact('categories','brands','sku_style_id'));
     }
@@ -43,7 +43,7 @@ class StyleController extends Controller
     public function getSkuId()
     {
         $sku_id_not_clean = preg_replace("/[:-]/","", Carbon::now());
-        $sku_style_id = preg_replace('/\s+/', '', $sku_id_not_clean);
+        $sku_style_id = preg_replace('/\s+/', '', 'STY-'.$sku_id_not_clean);
         
         return response()->json(['sku_style_id'=>$sku_style_id]);
     }
@@ -86,6 +86,10 @@ class StyleController extends Controller
         $style->brand_id = $request->brand_id;
         $style->category_id = $request->category_id;
         $style->description = $request->description;
+        $style->item_qty = 0;
+        $style->display_qty = 0;
+        $style->item_qty_status = 'Out of Stock';
+        $style->display_qty_status = 'No Display';
         $style->status = $request->status;
         $style->save();
 
@@ -102,7 +106,11 @@ class StyleController extends Controller
      */
     public function show($id)
     {
-        //
+        $styles = Style::findOrFail($id);
+        $brands = Brand::all();
+        $categories = Category::all();
+ 
+        return view('admin.style.view',compact('styles','brands','categories'));
     }
 
     /**
@@ -272,7 +280,7 @@ class StyleController extends Controller
                                                                   <span class="sr-only">Toggle Dropdown</span>
                                                               </button>
                                                               <ul class="dropdown-menu" role="menu">
-                                                                <li><a class="arrow" onclick="view_style_info('.$value->id.')">View</a></li>
+                                                                <li><a class="arrow" href="/style/'.$value->id.'">View</a></li>
                                                                 <li><a class="arrow" href="/style/edit/'.$value->id.'">Edit</a></li>
                                                                 <li><a class="arrow" onclick="delete_style_info('.$value->id.')">Delete</a></li>
                                                               </ul>
@@ -409,7 +417,7 @@ class StyleController extends Controller
                                                                   <span class="sr-only">Toggle Dropdown</span>
                                                               </button>
                                                               <ul class="dropdown-menu" role="menu">
-                                                                  <li><a class="arrow" onclick="view_style_info('.$value->id.')">View</a></li>
+                                                                  <li><a class="arrow" href="/style/'.$value->id.'">View</a></li>
                                                                   <li><a class="arrow" href="/style/edit/'.$value->id.'">Edit</a></li>
                                                                   <li><a class="arrow" onclick="delete_style_info('.$value->id.')">Delete</a></li>
                                                               </ul>
@@ -531,7 +539,7 @@ class StyleController extends Controller
                                                                   <span class="sr-only">Toggle Dropdown</span>
                                                               </button>
                                                               <ul class="dropdown-menu" role="menu">
-                                                                <li><a class="arrow" onclick="view_style_info('.$value->id.')">View</a></li>
+                                                                <li><a class="arrow" href="/style/'.$value->id.'">View</a></li>
                                                                 <li><a class="arrow" href="/style/edit/'.$value->id.'">Edit</a></li>
                                                                 <li><a class="arrow" onclick="delete_style_info('.$value->id.')">Delete</a></li>
                                                               </ul>

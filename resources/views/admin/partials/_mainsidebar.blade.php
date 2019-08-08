@@ -34,6 +34,7 @@
         </li>
         <li class="header">Management</li>
         <li><a href="{{ route('style.index')}}"><i class="fa fa-circle-o"></i> Style</a></li>
+        <li><a href="{{ route('style.index')}}"><i class="fa fa-circle-o"></i> Item</a></li>
         <li class="treeview">
           <a href="#">
             <i class="fa fa-share"></i> <span>App Settings</span>

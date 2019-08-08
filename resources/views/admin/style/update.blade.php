@@ -319,8 +319,10 @@ $('.select-ajax').multiselect({
                       <select class="form-control select2" data-placeholder="Select Status" style="width: 100%;" id="status">
                             @if($styles->status == 'Active')
                             <option selected="selected" value="Active">Active</option>
+                            <option value="Deactive">Deactive</option>
                             @else
                             <option selected="selected" value="Deactive">Deactive</option>
+                            <option value="Active">Active</option>
                             @endif
                       </select>
                    </div>
